@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}
+Error
+{% endblock %}
+
+{% block main %}
+<span>{{ error_text }}</span>
+<form action="/">
+  <button>Back</button>
+</form>
+{% endblock %}

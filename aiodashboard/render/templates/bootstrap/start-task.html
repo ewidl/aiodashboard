@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}
+Start Task
+{% endblock %}
+
+{% block main %}
+<div class="card border-secondary mb-3 narrow-centered">
+  <div class="card-header border-secondary">
+    Start new task for {{ target }}
+  </div>
+  <ul class="list-group list-group-flush">
+    {% for param in params %}
+    <li class="list-group-item border-secondary">
+      {{ param.name }} ({{ param.annotation.__name__ }}):
+      {% if param.default == no_default_param %}
+      <input type="{{ get_type(param) }}" name="{{ param.name }}" required form="cancel-form">
+      {% else %}
+      <input type="{{ get_type(param) }}" name="{{ param.name }}" placeholder="{{ param.default }}" form="cancel-form">
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+<div class="row g-0 narrow-centered">
+  <div class="col pe-2">
+    <form action="/start-task" method="POST" id="cancel-form">
+      <input type="hidden" name="coroutine-id" value="{{ coroutine_id }}">
+      <input type="hidden" name="target-param" value="{{ target_param }}">
+      <input type="hidden" name="target-pos" value="{{ target_pos }}">
+      <button class="btn w-100">START TASK</button>
+    </form>
+  </div>
+  <div class="col ms-2">
+    <form action="/">
+      <button class="btn w-100">BACK</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

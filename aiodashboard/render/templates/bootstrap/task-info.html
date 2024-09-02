@@ -1,0 +1,28 @@
+{% macro task_info_general(func_name, module, type_info) -%}
+<div class="card border-secondary" id="task-info">
+    <div class="card-header border-secondary">
+        General
+    </div>
+    <ul class="list-group list-group-flush" id="task-info">
+        <li class="list-group-item border-secondary" id="task-info"><b>coroutine</b>: {{ func_name }}</li>
+        <li class="list-group-item border-secondary" id="task-info"><b>module</b>: {{ module | default('&ndash;') | safe
+            }}</li>
+        {% if type_info %}
+        <li class="list-group-item border-secondary" id="task-info"><b>info</b>: {{ type_info }}</li>
+        {% endif %}
+    </ul>
+</div>
+{%- endmacro %}
+
+{% macro task_info_params(params) -%}
+<div class="card border-secondary" id="task-info">
+    <div class="card-header border-secondary">
+        Parameters
+    </div>
+    <ul class="list-group list-group-flush">
+        {% for name, value in params.items() %}
+        <li class="list-group-item border-secondary" id="task-info"><b>{{ name }}</b>: {{ value }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{%- endmacro %}

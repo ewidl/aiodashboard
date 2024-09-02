@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from 'task-info.html' import task_info_general, task_info_params %}
+
+{% block title %}
+Cancel Task
+{% endblock %}
+
+{% block main %}
+<h2>Cancel task for {{ target }}?</h2>
+<div>
+  {{ task_info_general(func_name, module, type_info) }}
+</div>
+<div>
+  {{ task_info_params(params) }}
+</div>
+<form action="/cancel-task" method="POST">
+  <input type="hidden" name="task-id" value="{{ task_id }}">
+  <input type="hidden" name="coroutine-id" value="{{ coroutine_id }}">
+  <input type="hidden" name="target-pos" value="{{ target_pos }}">
+  <button>YES</button>
+</form>
+<form action="/">
+  <button>NO</button>
+</form>
+{% endblock %}

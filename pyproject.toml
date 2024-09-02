@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "aiodashboard"
+version = "0.1.0"
+description = "Dashboard for asyncio tasks"
+authors = ["Edmund Widl <edmund.widl@ait.ac.at>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiohttp = "^3.10.4"
+aiohttp-jinja2 = "^1.6"
+aiohttp-session = "^2.12.0"
+bcrypt = "^4.2.0"
+lazy = "^1.6"
+color-palette = "^0.2.6.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.2"
+pytest-asyncio = "^0.24.0"
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "module"
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

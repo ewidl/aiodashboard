@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+    {% block title %}{% endblock %}
+  </title>
+</head>
+
+<body>
+  <header>
+    <h1>{{ dashboard_name }}</h1>
+    {% block extra_header %}{% endblock %}
+    <hr>
+  </header>
+
+  <main>
+    {% block main %}{% endblock %}
+  </main>
+
+  {% block footer %}{% endblock %}
+</body>
+
+</html>

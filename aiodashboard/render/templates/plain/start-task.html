@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}
+Start Task
+{% endblock %}
+
+{% block main %}
+<h2>Start new task for {{ target }}</h2>
+<ul>
+  {% for param in params %}
+  <li>{{ param.name }} ({{ param.annotation.__name__ }}):
+    {% if param.default == no_default_param %}
+    <input type="{{ get_type(param) }}" name="{{ param.name }}" required form="cancel-form">
+    {% else %}
+    <input type="{{ get_type(param) }}" name="{{ param.name }}" placeholder="{{ param.default }}" form="cancel-form">
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+<form action="/start-task" method="POST" id="cancel-form">
+  <input type="hidden" name="coroutine-id" value="{{ coroutine_id }}">
+  <input type="hidden" name="target-param" value="{{ target_param }}">
+  <input type="hidden" name="target-pos" value="{{ target_pos }}">
+  <button>START TASK</button>
+</form>
+<form action="/">
+  <button>BACK</button>
+</form>
+{% endblock %}

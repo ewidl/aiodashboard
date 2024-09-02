@@ -1,0 +1,19 @@
+{% macro task_info_general(func_name, module, type_info) -%}
+<h4>General</h4>
+<ul>
+    <li><b>coroutine</b>: {{ func_name }}</li>
+    <li><b>module</b>: {{ module | default('&ndash;') | safe }}</li>
+    {% if type_info %}
+    <li><b>info</b>: {{ type_info }}</li>
+    {% endif %}
+</ul>
+{%- endmacro %}
+
+{% macro task_info_params(params) -%}
+<h4>Parameters</h4>
+<ul>
+    {% for name, value in params.items() %}
+    <li><b>{{ name }}</b>: {{ value }}</li>
+    {% endfor %}
+</ul>
+{%- endmacro %}

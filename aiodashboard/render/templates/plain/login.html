@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}
+Login
+{% endblock %}
+
+{% block main %}
+{% if info %}
+<span>{{ info }}</span>
+{% endif %}
+<h2>Login</h2>
+<form action="/login" method="POST">
+  <input type="password" name="password">
+  <button>LOGIN</button>
+</form>
+{% endblock %}

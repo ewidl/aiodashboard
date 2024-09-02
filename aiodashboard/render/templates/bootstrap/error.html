@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from 'alert.html' import alert %}
+
+{% block title %}
+Error
+{% endblock %}
+
+{% block main %}
+{{ alert(error_text, 'error-alert') }}
+<div>
+  <form action="/">
+    <button class="btn">Back</button>
+  </form>          
+</div>
+{% endblock %}

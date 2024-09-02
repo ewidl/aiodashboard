@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from 'alert.html' import alert %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block main %}
+<div class="d-flex flex-column justify-content-center align-items-center">
+  {% if info %}
+    {{ alert(info, 'login-alert') }}
+  {% endif %}
+  <form id="login-form" action="/login" method="POST">
+    <div class="input-group">
+      <input class="form-control" type="password" name="password">
+      <button class="btn">LOGIN</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

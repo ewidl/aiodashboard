@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% from 'task-info.html' import task_info_general, task_info_params %}
+
+{% block title %}Tasks{% endblock %}
+
+{% block extra_header %}
+<nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+  <form action="/">
+    <button class="btn me-3" type="submit">REFRESH</button>
+  </form>
+  <form action="/logout">
+    <button class="btn" type="submit">LOGOUT</button>
+  </form>
+</nav>
+{% endblock %}
+
+{% block main %}
+<div class="mb-4">
+
+  <h2 class="mb-3">Start New Tasks</h2>
+
+  <form action="/start-task">
+    <div class="row">
+      <div class="col-md-10">
+        <div class="input-group mb-3">
+          <span class="input-group-text">Coroutine:</span>
+          <select name="coroutine-id" class="form-select" aria-label="coroutine select">
+            {% for key, value in coroutine_defs.items() %}
+            <option value="{{ key }}">{{ value.func_name }} ({{ value.module }})</option>
+            {% endfor %}
+          </select>
+          <span class="input-group-text">Target:</span>
+          <select name="target-pos" class="form-select" aria-label="target select">
+            {% for pos, target in enumerate(task_targets) %}
+            <option value="{{ pos }}">{{ target }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn">NEW TASK</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="mb-5">
+
+  <h2 class="mb-3">Running Tasks</h2>
+
+  {% if task_display_info | length %}
+  <div class="accordion" id="runningTasks">
+    {% for ii, (target, target_pos, func_name, module, task_id, coroutine_id, params, type_info) in enumerate(task_display_info) %}
+    <div class="accordion-item">
+      <h3 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapse{{ ii }}" aria-expanded="false" aria-controls="collapse{{ ii }}">
+          <b>{{ target }}</b>
+        </button>
+      </h3>
+      <div id="collapse{{ ii }}" class="accordion-collapse collapse" data-bs-parent="#runningTasks">
+        <div class="accordion-body">
+          <div class="row">
+            <div class="col-md-5">
+              {{ task_info_general(func_name, module, type_info) }}
+            </div>
+            <div class="col-md-5">
+              {{ task_info_params(params) }}
+            </div>
+            <div class="col-md-2 align-self-end">
+              <form action="/cancel-task">
+                <input type="hidden" name="task-id" value="{{ task_id }}">
+                <input type="hidden" name="coroutine-id" value="{{ coroutine_id }}">
+                <input type="hidden" name="target-pos" value="{{ target_pos }}">
+                <button type="submit" class="btn">CANCEL TASK</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <span>No running tasks.</span>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block footer %}
+<footer class="footer mt-auto py-3 fixed-bottom">
+  <div class="container">
+    <span class="text-body-secondary">Retrieved on {{ hostname }} at {{ datetime_now().strftime('%Y-%m-%d %H:%M:%S')
+      }}.</span>
+  </div>
+</footer>
+{% endblock %}

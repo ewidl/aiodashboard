@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% from 'task-info.html' import task_info_general, task_info_params %}
+
+{% block title %}Tasks{% endblock %}
+
+{% block extra_header %}
+<form action="/">
+  <button type="submit">REFRESH</button>
+</form>
+<form action="/logout">
+  <button type="submit">LOGOUT</button>
+</form>
+{% endblock %}
+
+{% block main %}
+<h2>Start New Tasks</h2>
+
+<form action="/start-task">
+  <span>Coroutine:</span>
+  <select name="coroutine-id" aria-label="coroutine select">
+    {% for key, value in coroutine_defs.items() %}
+    <option value="{{ key }}">{{ value.func_name }} ({{ value.module }})</option>
+    {% endfor %}
+  </select>
+  <span>Target:</span>
+  <select name="target-pos" aria-label="target select">
+    {% for pos, target in enumerate(task_targets) %}
+    <option value="{{ pos }}">{{ target }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">NEW TASK</button>
+</form>
+
+<h2>Running Tasks</h2>
+
+{% if task_display_info | length %}
+{% for ii, (target, target_pos, func_name, module, task_id, coroutine_id, params, type_info) in enumerate(task_display_info) %}
+<h3>{{ target }}</h3>
+<div>
+  {{ task_info_general(func_name, module, type_info) }}
+</div>
+<div>
+  {{ task_info_params(params) }}
+</div>
+<form action="/cancel-task">
+  <input type="hidden" name="task-id" value="{{ task_id }}">
+  <input type="hidden" name="coroutine-id" value="{{ coroutine_id }}">
+  <input type="hidden" name="target-pos" value="{{ target_pos }}">
+  <button type="submit">CANCEL TASK</button>
+</form>
+{% endfor %}
+{% else %}
+<span>No running tasks.</span>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+<footer>
+<hr>
+<span>Retrieved on {{ hostname }} at {{ datetime_now().strftime('%Y-%m-%d %H:%M:%S') }}.</span>
+</footer>
+{% endblock %}
