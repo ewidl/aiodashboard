@@ -1,9 +1,10 @@
 from .base_classmethod import BaseClassmethod, ModuleType, CoroutineDef, Parameter
+from .custom_id import CustomID
 
-class TestClassmethod(BaseClassmethod):
+class TestClassmethodCustomID(BaseClassmethod):
 
-    SETUP_MODULE: str = "tests.setup_classmethod"
-    ALL_TARGETS: list[str] = ["DEF", "GHI"]
+    SETUP_MODULE: str = "tests.setup_classmethod_custom_id"
+    ALL_TARGETS: list[CustomID] = [CustomID(1, 'A'), CustomID(2, 'B'), CustomID(3, 'C'), CustomID(4, 'D')]
 
     def test_coroutine_def_info1(self, setup: ModuleType) -> None:
         ids = CoroutineDef.get_coroutine_ids()
@@ -14,7 +15,7 @@ class TestClassmethod(BaseClassmethod):
         assert info.target_param == "id"
 
         coroutine_params = ["cls", "id", "msg", "sleep"]
-        coroutine_param_types = [Parameter.empty, str, str, int]
+        coroutine_param_types = [Parameter.empty, CustomID, str, int]
 
         context = info.context
         assert context.is_function == False

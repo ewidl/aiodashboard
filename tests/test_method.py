@@ -56,7 +56,7 @@ class TestMethod(Base):
         assert info.func == setup.Process.ping
         assert info.func_name == self.COROUTINE_NAME
         assert info.module == self.SETUP_MODULE
-        assert info.target_param == "id"
+        assert info.target_param == setup.TASK_TARGET_PARAM
 
         coroutine_params = ["id", "msg", "sleep"]
         coroutine_param_types = [str, str, int]

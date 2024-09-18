@@ -7,11 +7,13 @@ TASK_TARGET_PARAM: str = "id"
 class Process:
 
     @TaskTargetDef()
-    def targets(self) -> list:
-        return ["UVW", "XYZ"]
+    @staticmethod
+    def targets() -> list:
+        return ["IJK", "LMN"]
 
     @CoroutineDef(target_param=TASK_TARGET_PARAM)
-    async def ping(self, id: str, msg: str = "PING", sleep: int = 10) -> None:
+    @staticmethod
+    async def ping(id: str, msg: str = "PING", sleep: int = 10) -> None:
         while True:
             print(f"{id} --> {msg}")
             await asyncio.sleep(sleep)
