@@ -11,6 +11,9 @@ from .task_exec_info import TaskExecInfo
 from .util import all_tasks, task_id as str_task_id, get_package_name
 
 class TaskExec:
+    """
+    Collect and provide info for all running tasks.
+    """
 
     __cache: dict[Task, Optional[TaskExecInfo]] = dict()
 
@@ -53,13 +56,21 @@ class TaskExec:
                 # Retrieve task parameters.
                 args = frame.f_locals['args']
                 kwargs = frame.f_locals['kwargs']
+
+                # Special case: class method.
+                if (type(func) == classmethod): args = ['cls', *args]
+
+                # Special case: stacked decorators.
+                if hasattr(func, '__wrapped__'): func = getattr(func, '__wrapped__')
+
+                # Get the mapping of call arguments to values.
                 params = getcallargs(func, *args, **kwargs)
 
                 # Generate and append task execution info.
                 exec_info = TaskExecInfo(
                     task_id=str_task_id(task),
-                    coroutine_name=func.__qualname__, 
-                    module=func.__module__, 
+                    coroutine_name=func.__qualname__,
+                    module=func.__module__,
                     params=OrderedDict(sorted(params.items())),
                 )
 

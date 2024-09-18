@@ -1,22 +1,30 @@
 from typing import Any, Callable, Optional, TypeAlias
-from types import GenericAlias
+from types import FunctionType, GenericAlias
 from inspect import isfunction, Signature
 from warnings import warn
 
 from .callable_code_context import CallableCodeContext
+from .util import check_callable
 
 TaskTargetDefType: TypeAlias = Callable[[Any], list]
 
 class TaskTargetDef:
+    """
+    The dashboard relies on a dedicated function that provides a list of all possible targets of the monitored asyncio application.
+    This decorator is used for marking this specific function.
+    The function must not take any arguments.
+    The function must return a list (declared via a function annotation).
+    The dashboard won't work unless this decorator is applied to a function.
+    """
 
     __target_func: Optional[TaskTargetDefType] = None
     __target_func_context: Optional[CallableCodeContext] = None
 
     def __call__(self, func: TaskTargetDefType):
+        # Check if this decorator has been applied to a callable.
+        check_callable(callable=func)
 
-        if not isfunction(func):
-            raise RuntimeError(f'"{func.__qualname__}" is not a function')
-
+        # Check and warn if the decorator has been applied previously.
         if TaskTargetDef.__target_func:
             warn(
                 'Overriding previously defined task target function ' +
@@ -24,14 +32,23 @@ class TaskTargetDef:
                 RuntimeWarning, stacklevel=2
             )
             # Reset the context when overriding the task target function.
-            TaskTargetDef.__target_func_context = None 
+            TaskTargetDef.__target_func_context = None
+
+        # Save a reference to the callable.
         TaskTargetDef.__target_func = func
+
+        # Return the callable as is.
         return func
 
     @staticmethod
     def get_targets(process: Any = None) -> list:
+        """
+        Retrieve the targets using the callable marked by this decorator.
+        """
+        # Retrieve the code context of the target function.
         context = TaskTargetDef.get_context()
- 
+
+        # Depending on its type, call the target function.
         if context.is_method:
             if not process:
                 func_name = TaskTargetDef.__target_func.__qualname__
@@ -44,6 +61,9 @@ class TaskTargetDef:
 
     @staticmethod
     def get_context() -> CallableCodeContext:
+        """
+        Retrieve (and cache) the code context for the target function.
+        """
         if not TaskTargetDef.__target_func:
             raise RuntimeError('task target function has not been declared.')
 
@@ -54,9 +74,14 @@ class TaskTargetDef:
 
     @staticmethod
     def check() -> None:
+        """
+        Check the definition of the provided target function.
+        The function must not take any arguments.
+        The function must return a list (declared via a function annotation).
+        """
         context = TaskTargetDef.get_context()
         func_name = TaskTargetDef.__target_func.__qualname__
-        
+
         params = context.parameters
         if (context.is_method and not 1 == len(params)) or (not context.is_method and not 0 == len(params)):
             param_names = ', '.join(params.keys())
@@ -73,5 +98,9 @@ class TaskTargetDef:
 
     @staticmethod
     def reset() -> None:
+        """
+        Reset the internal cache.
+        Mostly intended for testing.
+        """
         TaskTargetDef.__target_func = None
         TaskTargetDef.__target_func_context = None
