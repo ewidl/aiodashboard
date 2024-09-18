@@ -11,6 +11,9 @@ from .util import coroutine_id
 
 @dataclass
 class TaskExecInfo:
+    """
+    Provide information about an executing task.
+    """
     task_id: str
     coroutine_name: str
     module: str
