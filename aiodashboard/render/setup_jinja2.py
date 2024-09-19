@@ -1,3 +1,4 @@
+from aiohttp.web import Application
 from aiohttp_jinja2 import setup, get_env
 from jinja2 import FileSystemLoader
 
@@ -8,10 +9,9 @@ import socket
 import inspect
 
 from .dashboard_style import DashboardStyle
-from ..util.typing import WebHandler
 
 def setup_jinja2(
-        app: WebHandler,
+        app: Application,
         dashboard_name: str,
         style: DashboardStyle,
         use_plain_html: bool = False,
@@ -23,7 +23,7 @@ def setup_jinja2(
     templates_path = str(Path(__file__).parent / 'templates' / 'plain') \
         if use_plain_html else str(Path(__file__).parent / 'templates' / 'bootstrap')
 
-    # Basic setup for jinja2 templating engine. 
+    # Basic setup for jinja2 templating engine.
     setup(
         app,
         loader = FileSystemLoader(templates_path)

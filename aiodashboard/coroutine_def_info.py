@@ -25,7 +25,7 @@ class CoroutineDefInfo:
         self.target_param=target_param
         self.coroutine_id=coroutine_id(self.func_name, self.module)
 
-    @lazy
+    @lazy # type: ignore[no-redef]
     def context(self) -> CallableCodeContext:
         """
         Return the context of the coroutine.

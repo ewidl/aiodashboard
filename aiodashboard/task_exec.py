@@ -100,7 +100,11 @@ class TaskExec:
         for task in all_tasks():
             if task_id == str_task_id(task):
                 def_info = CoroutineDef.get_coroutine_def_info(coroutine_id)
+                if not def_info: raise RuntimeError(f'Unknown coroutine ID = {coroutine_id}')
+
                 exec_info = TaskExec.get(task)
+                if not exec_info: raise RuntimeError(f'No execution info available for task ID = {task_id}')
+
                 check_target = exec_info.params[def_info.target_param] == target
                 if check_target:
                     task.cancel()

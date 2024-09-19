@@ -6,7 +6,7 @@ from warnings import warn
 from .callable_code_context import CallableCodeContext
 from .util import check_callable
 
-TaskTargetDefType: TypeAlias = Callable[[Any], list]
+TaskTargetDefType: TypeAlias = Callable[..., list]
 
 class TaskTargetDef:
     """
@@ -45,6 +45,9 @@ class TaskTargetDef:
         """
         Retrieve the targets using the callable marked by this decorator.
         """
+        if not TaskTargetDef.__target_func:
+            raise RuntimeError('task target function has not been declared.')
+
         # Retrieve the code context of the target function.
         context = TaskTargetDef.get_context()
 
@@ -79,6 +82,9 @@ class TaskTargetDef:
         The function must not take any arguments.
         The function must return a list (declared via a function annotation).
         """
+        if not TaskTargetDef.__target_func:
+            raise RuntimeError('task target function has not been declared.')
+
         context = TaskTargetDef.get_context()
         func_name = TaskTargetDef.__target_func.__qualname__
 

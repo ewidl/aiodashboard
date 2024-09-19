@@ -8,12 +8,14 @@ from .login import *
 from .util import *
 
 from .coroutine_def import CoroutineDef
+from .coroutine_def_info import CoroutineDefInfo
 from .task_exec import TaskExec
+from .task_exec_info import TaskExecInfo
 from .task_target_def import TaskTargetDef
 
 from typing import Any
 
-all_tasks = set()
+list_all_tasks : set[asyncio.Task] = set()
 
 class Dashboard:
 
@@ -110,8 +112,8 @@ class Dashboard:
         if target_pos >= len(self._task_targets): raise RuntimeError('Invalid target position')
         target = self._task_targets[target_pos]
 
-        # Get info about executing task.
-        exec_info = TaskExec.get_by_id(form['task-id'], from_cache=True)
+        # Get info about executing task. Ignore type warnings, execution info is guaranteed to be available.
+        exec_info : TaskExecInfo = TaskExec.get_by_id(str(form['task-id']), from_cache=True) # type: ignore[assignment]
 
         # Get parameters of executing task. Remove 'self' from methods and 'cls' from class methods.
         params = exec_info.params.copy()
@@ -125,8 +127,8 @@ class Dashboard:
             'func_name': exec_info.coroutine_name,
             'module': exec_info.module,
             'params': params,
-            'task_id': form['task-id'],
-            'coroutine_id': form['coroutine-id'],
+            'task_id': str(form['task-id']),
+            'coroutine_id': str(form['coroutine-id']),
         }
 
     @require_login
@@ -140,14 +142,14 @@ class Dashboard:
         form = await request.post()
 
         # Retrieve target of executing task.
-        target_pos = int(form['target-pos'])
+        target_pos = int(form['target-pos']) # type: ignore[arg-type]
         if target_pos >= len(self._task_targets): raise RuntimeError('Invalid target position')
         target = self._task_targets[target_pos]
 
         # Cancel running task.
         TaskExec.cancel(
-            task_id=form['task-id'],
-            coroutine_id=form['coroutine-id'],
+            task_id=str(form['task-id']),
+            coroutine_id=str(form['coroutine-id']),
             target=target,
         )
 
@@ -165,7 +167,7 @@ class Dashboard:
         """
         form = request.query
         target_pos = int(form['target-pos'])
-        coroutine_id = form['coroutine-id']
+        coroutine_id = str(form['coroutine-id'])
 
         # Retrieve target for new task.
         if target_pos >= len(self._task_targets): raise RuntimeError('Invalid target position')
@@ -212,16 +214,17 @@ class Dashboard:
         Handle task start-up.
         """
         form = (await request.post()).copy()
-        coroutine_id = form.pop('coroutine-id')
-        target_param = form.pop('target-param')
-        target_pos = int(form.pop('target-pos'))
+        coroutine_id = str(form.pop('coroutine-id'))
+        target_param = str(form.pop('target-param'))
+        target_pos = int(form.pop('target-pos')) # type: ignore[arg-type]
 
-        # Retrieve coroutine info.
-        func_info = CoroutineDef.get_coroutine_def_info(coroutine_id)
+        # Retrieve coroutine info. Ignore type warnings, coroutine info is guaranteed to be available.
+        func_info: CoroutineDefInfo = CoroutineDef.get_coroutine_def_info(coroutine_id) # type: ignore[assignment]
+
         # Extract parameter names and their values for calling the coroutine.
         param_list = func_info.context.parameters
         param_apply = {
-            k: param_list[k].default if not v else get_type_from_str(param_list[k],v) for k, v in form.items()
+            k: param_list[k].default if not v else get_type_from_str(param_list[k],str(v)) for k, v in form.items()
         }
 
         # Retrieve target ID param value and add it to the parameters.
@@ -237,10 +240,10 @@ class Dashboard:
             task = loop.create_task(func_info.func(**param_apply))
 
         # Add to list of tasks, creating a strong reference to avoid the task disappearing mid-execution.
-        all_tasks.add(task)
+        list_all_tasks.add(task)
         # To prevent keeping references to finished tasks forever, make each task remove its own reference
         # from the set after completion.
-        task.add_done_callback(all_tasks.discard)
+        task.add_done_callback(list_all_tasks.discard)
 
         # Go bask to index page.
         raise web.HTTPSeeOther(location='/')
@@ -277,7 +280,7 @@ class Dashboard:
 
         # Get entered password.
         form = await request.post()
-        password = form['password']
+        password = str(form['password'])
 
         # Check entered password.
         if self._pwd_hash.check(password):

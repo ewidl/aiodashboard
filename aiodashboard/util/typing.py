@@ -1,7 +1,7 @@
-from typing import Awaitable, Callable # type: ignore
+from typing import Awaitable, Callable
 
 import asyncio
-Loop = asyncio.AbstractEventLoop # type: ignore
+Loop = asyncio.AbstractEventLoop
 
 from aiohttp import web
-WebHandler = Callable[[web.Request], Awaitable[web.StreamResponse]] # type: ignore
+WebHandler = Callable[..., Awaitable[web.StreamResponse]]

@@ -1,4 +1,4 @@
-from color_palette import Color
+from color_palette import Color # type: ignore[import-untyped]
 
 from dataclasses import dataclass
 

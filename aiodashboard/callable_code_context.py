@@ -43,12 +43,14 @@ class CallableCodeContext:
         For (ordinary/static/class) methods, return a string with information about their
         type and the class they are defined in. For ordinary functions return None.
         """
+        # Note: Ignore errors of type "union-attr", because for (ordinary/static/class) methods the
+        # attribute "containing_class" will not be None.
         if self.is_method:
-            return f'method of class {self.containing_class.__qualname__}'
+            return f'method of class {self.containing_class.__qualname__}' # type: ignore[union-attr]
         elif self.is_static_method:
-            return f'static method of class {self.containing_class.__qualname__}'
+            return f'static method of class {self.containing_class.__qualname__}' # type: ignore[union-attr]
         elif self.is_class_method:
-            return f'class method of class {self.containing_class.__qualname__}'
+            return f'class method of class {self.containing_class.__qualname__}' # type: ignore[union-attr]
         else: # self.is_function:
             return None
 
@@ -81,7 +83,7 @@ class CallableCodeContext:
 
         # Retrieve the list of parameters (function signature) and its return type.
         sig = signature(code_objects[-1])
-        target_params = sig.parameters.copy()
+        target_params = OrderedDict(sorted(sig.parameters.items()))
         return_annotation = sig.return_annotation
 
         is_function = (callable_type is FunctionType) # Callable is a function.

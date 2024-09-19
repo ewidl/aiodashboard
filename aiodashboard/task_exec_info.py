@@ -25,7 +25,9 @@ class TaskExecInfo:
 
     @lazy
     def coroutine_def(self) -> CoroutineDefInfo:
-        return CoroutineDef.get_coroutine_def_info(self.coroutine_id)
+        coroutine_def = CoroutineDef.get_coroutine_def_info(self.coroutine_id)
+        if not coroutine_def: raise RuntimeError(f'Unknown couroutine: {self.coroutine_name}')
+        return coroutine_def
 
     @lazy
     def target(self) -> Any:
